@@ -1,2 +1,1 @@
-# DataScience
-my data science projects
+# DS Project – Hotel Price Prediction and Clustering
