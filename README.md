@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Hotel Price Prediction with Smart Sampling - Data Science Project
 
 ## Overview
@@ -198,8 +197,3 @@ Key takeaways:
 This approach is applicable to many domains where full data is unavailable or costly – such as pricing, medical diagnostics, and supply chain forecasting.
 
 ---
-
-=======
-# DS Project 
- 
->>>>>>> 87d5f3843b78c8d6613705a046f4b52752c8b9ad
