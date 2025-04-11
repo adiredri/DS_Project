@@ -102,7 +102,7 @@ These insights directly informed the design choices for Part B, where the focus 
 
 # [Part B – Smart Sampling and Gaussian Process Regression](./PartB)
 
-## [1. Motivation and Problem Framing](./PartB/PartB5.ipynb)
+## [1. Motivation and Problem Framing](./PartB/PartB1.ipynb)
 
 After establishing a baseline in Part A, the focus in Part B shifts from collecting more data to **using data more efficiently**.  
 The goal is to train accurate predictive models while minimizing the number of data points used – a real-world scenario where data is expensive or limited.
