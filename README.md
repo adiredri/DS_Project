@@ -21,9 +21,9 @@ Each part builds upon the previous one, forming a complete and scalable workflow
 
 ---
 
-# Part A – Data Collection, Enrichment and Baseline Modeling ([Colab Notebook](https://github.com/adiredri/DS_Project/blob/main/Part%20A%20-%20Hotel%20Price%20Prediction.ipynb))
+# [Part A – Data Collection, Enrichment and Baseline Modeling](#part-a--data-collection-enrichment-and-baseline-modeling)
 
-## 1. Web Scraping and Raw Data Construction [→ Go to scraping section](https://github.com/adiredri/DS_Project/blob/main/Part%20A%20-%20Hotel%20Price%20Prediction.ipynb)
+## 1. Web Scraping and Raw Data Construction
 
 
 The project begins with a full-scale **web scraping operation**, aimed at collecting hotel pricing data from multiple booking sources. The scraping process targeted a variety of hotel chains across different geographic regions and dates, retrieving structured HTML tables and dynamic JavaScript-rendered prices using Selenium and BeautifulSoup.
