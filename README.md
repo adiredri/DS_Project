@@ -102,7 +102,7 @@ These insights directly informed the design choices for Part B, where the focus 
 
 # [Part B – Smart Sampling and Gaussian Process Regression](./PartB)
 
-## [1. Motivation and Problem Framing](./PartB/)
+## [1. Motivation and Problem Framing](./PartB/PartB5.ipynb)
 
 After establishing a baseline in Part A, the focus in Part B shifts from collecting more data to **using data more efficiently**.  
 The goal is to train accurate predictive models while minimizing the number of data points used – a real-world scenario where data is expensive or limited.
@@ -116,7 +116,7 @@ This part of the project evaluates not only model accuracy, but also **data acqu
 
 ---
 
-## [2. Data Setup and Grouping Logic](./PartB/)
+## [2. Data Setup and Grouping Logic](./PartB/partB2)
 
 We start from a cleaned dataset (output of Part A or provided) and group data by a unique hotel-date-discount combination.
 
@@ -132,7 +132,7 @@ This hierarchical structure enables parallel evaluation across thousands of scen
 
 ---
 
-## [3. Sampling Loop and Active Learning Strategy](./PartB/)
+## [3. Sampling Loop and Active Learning Strategy](./PartB/PartB3.ipynb)
 
 The heart of Part B is an **iterative sampling loop**:
 
@@ -151,7 +151,7 @@ This loop mimics a real-time sampling policy: the model decides **which day to a
 
 ---
 
-## [4. Gaussian Process Regression Details](./PartB/)
+## [4. Gaussian Process Regression Details](./PartB/PartB4.ipynb)
 
 We used `sklearn.gaussian_process.GaussianProcessRegressor` with a composite kernel to capture both linear and smooth non-linear trends.
 
@@ -166,7 +166,7 @@ Baseline models like **Linear Regression** were also tested within the same loop
 
 ---
 
-## [5. Results and Evaluation](./PartB/)
+## [5. Results and Evaluation](./PartB/PartB5.ipynb)
 
 Key metrics recorded during the sampling process:
 - Final **R² score** on the full curve
