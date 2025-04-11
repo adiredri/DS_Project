@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hotel Price Prediction with Smart Sampling - Data Science Project
 
 ## Overview
@@ -198,3 +199,7 @@ This approach is applicable to many domains where full data is unavailable or co
 
 ---
 
+=======
+# DS Project 
+ 
+>>>>>>> 87d5f3843b78c8d6613705a046f4b52752c8b9ad
