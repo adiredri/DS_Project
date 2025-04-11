@@ -21,7 +21,7 @@ Each part builds upon the previous one, forming a complete and scalable workflow
 
 ---
 
-# [Part A – Data Collection, Enrichment and Baseline Modeling](#part-a--data-collection-enrichment-and-baseline-modeling)
+# [Part A – Data Collection, Enrichment and Baseline Modeling](./PartA)
 
 ## [1. Web Scraping and Raw Data Construction](#1-web-scraping-and-raw-data-construction)
 
