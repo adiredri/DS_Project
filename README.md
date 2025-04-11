@@ -23,7 +23,7 @@ Each part builds upon the previous one, forming a complete and scalable workflow
 
 # [Part A – Data Collection, Enrichment and Baseline Modeling](#part-a--data-collection-enrichment-and-baseline-modeling)
 
-## 1. Web Scraping and Raw Data Construction
+## [1. Web Scraping and Raw Data Construction](#1-web-scraping-and-raw-data-construction)
 
 
 The project begins with a full-scale **web scraping operation**, aimed at collecting hotel pricing data from multiple booking sources. The scraping process targeted a variety of hotel chains across different geographic regions and dates, retrieving structured HTML tables and dynamic JavaScript-rendered prices using Selenium and BeautifulSoup.
@@ -43,7 +43,7 @@ This dataset served as the foundation for all downstream processing and modeling
 
 ---
 
-## 2. Preprocessing and Data Cleaning
+## [2. Preprocessing and Data Cleaning](#2-preprocessing-and-data-cleaning)
 
 Following the scraping phase, the data was passed through a **rigorous preprocessing pipeline**. The goal was to unify formats, handle outliers, and prepare the data for modeling.
 
@@ -58,7 +58,7 @@ The output of this phase was a clean, analysis-ready DataFrame.
 
 ---
 
-## 3. Feature Engineering
+## [3. Feature Engineering](#3-feature-engineering)
 
 We then performed extensive **feature engineering** to enrich the dataset. This step focused on generating new variables and structures that improve model learnability.
 
@@ -72,7 +72,7 @@ The enriched dataset allowed us to explore temporal trends and booking behaviors
 
 ---
 
-## 4. Baseline Modeling
+## [4. Baseline Modeling](#4-baseline-modeling)
 
 To evaluate the predictive potential of the data, we built and compared several **baseline regression models**:
 
@@ -100,9 +100,9 @@ These insights directly informed the design choices for Part B, where the focus 
 
 ---
 
-# Part B – Smart Sampling and Gaussian Process Regression
+# [Part B – Smart Sampling and Gaussian Process Regression](#part-b--smart-sampling-and-gaussian-process-regression)
 
-## 1. Motivation and Problem Framing
+## [1. Motivation and Problem Framing](#1-motivation-and-problem-framing)
 
 After establishing a baseline in Part A, the focus in Part B shifts from collecting more data to **using data more efficiently**.  
 The goal is to train accurate predictive models while minimizing the number of data points used – a real-world scenario where data is expensive or limited.
@@ -116,7 +116,7 @@ This part of the project evaluates not only model accuracy, but also **data acqu
 
 ---
 
-## 2. Data Setup and Grouping Logic
+## [2. Data Setup and Grouping Logic](#2-data-setup-and-grouping-logic)
 
 We start from a cleaned dataset (output of Part A or provided) and group data by a unique hotel-date-discount combination.
 
@@ -132,7 +132,7 @@ This hierarchical structure enables parallel evaluation across thousands of scen
 
 ---
 
-## 3. Sampling Loop and Active Learning Strategy
+## [3. Sampling Loop and Active Learning Strategy](#3-sampling-loop-and-active-learning-strategy)
 
 The heart of Part B is an **iterative sampling loop**:
 
@@ -151,7 +151,7 @@ This loop mimics a real-time sampling policy: the model decides **which day to a
 
 ---
 
-## 4. Gaussian Process Regression Details
+## [4. Gaussian Process Regression Details](#4-gaussian-process-regression-details)
 
 We used `sklearn.gaussian_process.GaussianProcessRegressor` with a composite kernel to capture both linear and smooth non-linear trends.
 
@@ -166,7 +166,7 @@ Baseline models like **Linear Regression** were also tested within the same loop
 
 ---
 
-## 5. Results and Evaluation
+## [5. Results and Evaluation](#5-results-and-evaluation)
 
 Key metrics recorded during the sampling process:
 - Final **R² score** on the full curve
