@@ -175,26 +175,19 @@ Instead of training one global model across all data, each group was treated as 
 
 The following models were trained and evaluated:
 
-- **[K-Nearest Neighbors (KNN)](./PartB/PartB2/KNN.ipynb)**  
-  A simple, non-parametric method that works well for local patterns but suffers in sparse or high-dimensional spaces.
+- **[K-Nearest Neighbors (KNN)](./PartB/PartB2/KNN.ipynb)** - A simple, non-parametric method that works well for local patterns but suffers in sparse or high-dimensional spaces.
 
-- **[Random Forest (RF)](./PartB/PartB2/RF.ipynb)**  
-  An ensemble of decision trees offering strong accuracy and robustness, though prone to overfitting small groups.
+- **[Random Forest (RF)](./PartB/PartB2/RF.ipynb)** - An ensemble of decision trees offering strong accuracy and robustness, though prone to overfitting small groups.
 
-- **[Decision Tree (DT)](./PartB/PartB2/DT.ipynb)**  
-  A fast, interpretable model that provides a baseline for tree structures but lacks generalization on complex patterns.
+- **[Decision Tree (DT)](./PartB/PartB2/DT.ipynb)** - A fast, interpretable model that provides a baseline for tree structures but lacks generalization on complex patterns.
 
-- **[XGBoost](./PartB/PartB2/XG.ipynb)**  
-  A gradient-boosted tree ensemble that achieved the highest average performance due to its ability to model nuanced dependencies.
+- **[XGBoost](./PartB/PartB2/XG.ipynb)** - A gradient-boosted tree ensemble that achieved the highest average performance due to its ability to model nuanced dependencies.
 
-- **[Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)**  
-  A probabilistic model based on independence assumptions; lightweight but limited in expressive power for continuous regression.
+- **[Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)** - A probabilistic model based on independence assumptions; lightweight but limited in expressive power for continuous regression.
 
-- **[a.ipynb](./PartB/PartB2/a.ipynb)**  
-  A development notebook used to prototype the grouping logic and validate modeling infrastructure before scaling up.
+- **[a.ipynb](./PartB/PartB2/a.ipynb)** - A development notebook used to prototype the grouping logic and validate modeling infrastructure before scaling up.
 
-- **[B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb)**  
-  Consolidates performance results and enables head-to-head comparisons across all models using R², MAE, and error analysis.
+- **[B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb)** - Consolidates performance results and enables head-to-head comparisons across all models using R², MAE, and error analysis.
 
 Evaluation metrics in the comparison notebook included R² scores per group, MAE comparisons, and visual analysis through histograms and boxplots.
 
