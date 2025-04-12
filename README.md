@@ -92,23 +92,25 @@ This process significantly enhanced the model-readiness of the dataset.
 
 ## [4. Baseline Modeling](./PartA/PartA4.ipynb)
 
-To establish a benchmark for price prediction, we trained several baseline regression models on the enriched dataset.  
-These models served as a reference point for later comparisons with smarter, sampling-based methods.
+To evaluate the predictive potential of our enriched dataset, we trained several baseline regression models.  
+The goal was to set a performance benchmark using classical methods, before transitioning to more sophisticated approaches in Part B.  
+This step also helped us understand the strengths and weaknesses of traditional models when applied to the highly dynamic context of hotel pricing.
 
-Models compared:
-- **Linear Regression** – Simple and interpretable
-- **Random Forest** – Non-linear with ensemble power
-- **K-Nearest Neighbors** – Distance-based local learning
+We experimented with three popular regressors:
 
-Each model was evaluated using:
-- R² score  
-- MAE (Mean Absolute Error)  
-- Train/Test split with cross-validation by hotel group
+- **Linear Regression**: A straightforward model, good for interpretability but often limited in expressiveness.
+- **Random Forest**: An ensemble of decision trees that handles non-linear relationships well.
+- **K-Nearest Neighbors (KNN)**: A non-parametric model relying on similarity in feature space, sensitive to local data structure.
 
-Visualizations included:
-- Predictions vs actual prices  
-- Error distribution plots  
-- Hotel-level breakdowns
+Each model was trained and tested using a **Train/Test split**, with **cross-validation applied per hotel group** to account for structural differences across hotels and dates.
+
+To analyze the results, we used both numeric metrics and visual diagnostics:
+
+- **R² score** and **Mean Absolute Error (MAE)** were calculated for each model.
+- Visualizations included predicted vs. actual price plots, error distribution histograms, and hotel-level performance breakdowns.
+
+Overall, the results showed that while tree-based models like Random Forest performed better than linear methods, they still suffered from overfitting in sparse regions.  
+KNN's performance varied significantly across hotel types, reinforcing the need for group-specific learning strategies.
 
 ---
 
@@ -168,31 +170,42 @@ This structure allows the modeling of booking behavior in a localized and interp
 This section focuses on evaluating various regression models across **grouped sub-problems**.  
 Each group — defined by a unique combination of `Hotel Name`, `Snapshot Date`, and `Discount Code` — represents a distinct forecasting task, where the model must predict room prices over the 30 days leading to check-in.
 
-This granular decomposition enables:
-- Independent training and evaluation per group
-- Better interpretability of model behavior across different hotel profiles
-- Fair comparison of model generalization across booking contexts
+This grouping strategy allowed us to perform localized modeling per hotel context, improving both interpretability and evaluation granularity.  
+Instead of training one global model across all data, each group was treated as a self-contained learning problem — better reflecting the real-world variability between hotels, seasons, and discount policies.
 
 The following models were trained and evaluated:
-- [K-Nearest Neighbors (KNN)](./PartB/PartB2/KNN.ipynb)
-- [Random Forest (RF)](./PartB/PartB2/RF.ipynb)
-- [Decision Trees (DT)](./PartB/PartB2/DT.ipynb)
-- [XGBoost](./PartB/PartB2/XG.ipynb)
-- [Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)
 
-Evaluation metrics were consolidated in [B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb), including:
-- R² scores per group
-- Mean Absolute Error (MAE) comparison
-- Histograms and boxplots of model performance
+- **[K-Nearest Neighbors (KNN)](./PartB/PartB2/KNN.ipynb)**  
+  A simple, non-parametric method that works well for local patterns but suffers in sparse or high-dimensional spaces.
 
-The analysis confirmed that:
-- Tree-based models (Random Forest, XGBoost) achieved the highest overall accuracy
-- Simpler models (KNN, NB) struggled with sparse or irregular groups
-- Grouping data by hotel and date improves not only accuracy, but also diagnostic clarity
+- **[Random Forest (RF)](./PartB/PartB2/RF.ipynb)**  
+  An ensemble of decision trees offering strong accuracy and robustness, though prone to overfitting small groups.
 
-This comparison phase served as a strong diagnostic benchmark, providing insight into model limitations and preparing the groundwork for **iterative, uncertainty-based sampling** in the next stage.
+- **[Decision Tree (DT)](./PartB/PartB2/DT.ipynb)**  
+  A fast, interpretable model that provides a baseline for tree structures but lacks generalization on complex patterns.
 
----
+- **[XGBoost](./PartB/PartB2/XG.ipynb)**  
+  A gradient-boosted tree ensemble that achieved the highest average performance due to its ability to model nuanced dependencies.
+
+- **[Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)**  
+  A probabilistic model based on independence assumptions; lightweight but limited in expressive power for continuous regression.
+
+- **[a.ipynb](./PartB/PartB2/a.ipynb)**  
+  A development notebook used to prototype the grouping logic and validate modeling infrastructure before scaling up.
+
+- **[B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb)**  
+  Consolidates performance results and enables head-to-head comparisons across all models using R², MAE, and error analysis.
+
+Evaluation metrics in the comparison notebook included R² scores per group, MAE comparisons, and visual analysis through histograms and boxplots.
+
+The analysis confirmed several important insights:
+
+- Tree-based models (Random Forest, XGBoost) achieved the highest overall accuracy  
+- Simpler models like KNN and Naive Bayes showed inconsistent results, particularly in sparse or irregular groups  
+- The group-wise setup offered clear diagnostic value, revealing where models excelled or failed in specific hotel contexts
+
+This stage served as a diagnostic baseline — not just to identify the best model, but to understand the variability in performance across different hotel-date segments.  
+It provided a robust foundation for the iterative and uncertainty-driven sampling approach introduced in the next section.
 
 ---
 
