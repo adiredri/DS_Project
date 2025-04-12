@@ -185,7 +185,7 @@ The following models were trained and evaluated:
 
 - **[Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)** - A probabilistic model based on independence assumptions; lightweight but limited in expressive power for continuous regression.
 
-- **[a.ipynb](./PartB/PartB2/a.ipynb)** - A development notebook used to prototype the grouping logic and validate modeling infrastructure before scaling up.
+- **[B2Preparing.ipynb](./PartB/PartB2/B2Preparing.ipynb)** – A preparatory notebook used to prototype the grouping logic and validate modeling infrastructure before scaling up.
 
 - **[B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb)** - Consolidates performance results and enables head-to-head comparisons across all models using R², MAE, and error analysis.
 
