@@ -230,13 +230,11 @@ The strategy proved effective in reducing data needs while maintaining strong pr
 
 ## [4. Gaussian Process Regression Implementation](./PartB/PartB4.ipynb)
 
-This section provides a detailed look at the implementation and rationale behind using **Gaussian Process Regression (GPR)** as the core model in our sampling loop.
+This section provides an in-depth explanation of why **Gaussian Process Regression (GPR)** was selected as the main regression technique in our sampling framework, and how it was configured and evaluated.
 
-GPR is particularly suited for small, structured datasets and offers two major advantages:
-- A **mean prediction** for each query point
-- An **uncertainty estimate** (standard deviation) that quantifies confidence
+GPR is particularly effective in small-data regimes due to its probabilistic foundation. It offers both a **mean prediction** and a **quantified uncertainty estimate**, which are critical for guiding active learning. These two outputs allow the model not only to predict prices but also to assess where it's uncertain — a valuable capability when data acquisition is limited or costly.
 
-These properties make GPR ideal for **uncertainty-aware sampling**, enabling the model to identify where more data is needed.
+We applied GPR to each group independently, treating each hotel-date-discount group as a localized regression task. The model's ability to update incrementally made it well-suited for the progressive sampling loop described earlier.
 
 ### Model Configuration:
 - Implemented using `sklearn.gaussian_process.GaussianProcessRegressor`
@@ -247,74 +245,72 @@ These properties make GPR ideal for **uncertainty-aware sampling**, enabling the
 - Trained separately on each group (`Hotel Name`, `Snapshot Date`, `Discount Code`)
 - Supports incremental updates as new samples are added
 
-### Additional Comparisons:
-To evaluate the sampling strategy, we also benchmarked:
-- **Linear Regression** – as a low-complexity baseline
-- **Uncertainty-only vs. R²-aware sampling** – to measure trade-offs in convergence speed and accuracy
+Beyond GPR, we included additional benchmarks to validate the sampling framework's robustness. In particular, we compared GPR to **Linear Regression** as a simple baseline, and explored the differences between **uncertainty-driven sampling** and sampling based on **R² improvement**.
 
-Results showed that GPR, with informed sampling, consistently outperformed static models in both **efficiency** and **predictive accuracy**, confirming its value in real-world, limited-data contexts.
-
----
+These comparisons highlighted GPR’s superiority in balancing exploration and exploitation. With fewer samples, the GPR models achieved high accuracy and demonstrated more stable convergence than their deterministic counterparts. This reinforced the effectiveness of combining probabilistic modeling with smart sampling in data-scarce environments.
 
 ---
 
 ## [5. Results, Evaluation, and Insights](./PartB/PartB5.ipynb)
 
-This final section consolidates the performance results of the smart sampling framework.  
-The models were evaluated not only on accuracy, but also on their **efficiency** in using data — a key metric in scenarios where labeling or acquisition is costly.
+This final section summarizes the effectiveness of the smart sampling strategy, with a particular focus on the **efficiency, convergence behavior, and generalizability** of the Gaussian Process Regression (GPR) model under real-world constraints.
 
-The **Gaussian Process Regressor (GPR)** proved to be both accurate and economical.  
-By selecting points with the highest uncertainty and stopping when gains plateaued, the model learned robustly while minimizing the number of queries.
+Our evaluation prioritized not just raw accuracy, but the trade-off between **predictive power and data usage** — a core concern in domains where labels are expensive or slow to acquire. The GPR model, with its uncertainty estimates and smooth interpolation capabilities, proved especially well-suited for this context.
 
-### Key Metrics Observed:
-- **R² Score**: GPR consistently achieved >0.94 R² on average  
-- **Sampling Efficiency**: Only 6–8 samples per group were typically needed  
-- **Cost Reduction**: Early stopping reduced labeling needs by ~75%  
-- **Baseline Comparison**: Linear Regression required nearly the full dataset to stabilize  
-- **Convergence Dynamics**: GPR converged faster, and more reliably under uncertainty-aware sampling
+### Key Outcomes and Insights:
 
-### Visualizations Included:
-- Price prediction curves vs. true prices
-- R² progression per iteration
-- Heatmaps of model uncertainty over time
-- Distribution histograms of sampled points per group
+The smart sampling loop demonstrated that:
+- **High accuracy can be achieved with limited data**: GPR consistently surpassed an R² of 0.94 on average, often with only **6–8 samples per group**.
+- **Sampling selectivity outperforms brute force**: Instead of feeding the model with all 30 days of pricing data, selective querying (guided by uncertainty) allowed the model to learn faster and more reliably.
+- **Cost-effective learning is viable**: Early stopping, based on uncertainty and R² stagnation, helped reduce the labeling burden by up to **75%**, without compromising prediction quality.
 
-These results reinforce the project’s main claim: **smart sampling + GPR = high accuracy with minimal data**.  
-The methodology offers strong potential for deployment in industries where resource constraints are a major concern.
+Compared to baseline models like Linear Regression — which often required the full dataset to stabilize — GPR was able to generalize well with fewer examples, making it a powerful solution in low-resource settings.
+
+### Tools and Evaluation Techniques:
+
+Throughout this section, we employed:
+- **Iterative metrics tracking** (R² vs. iteration) to monitor learning efficiency
+- **Uncertainty heatmaps** to assess model confidence across the prediction window
+- **Sampling frequency histograms** to measure how many queries were needed per group
+- **Curve overlays** (prediction vs. ground truth) to visually validate model behavior
+
+These tools provided both **quantitative backing** and **visual diagnostics** for model decisions — allowing us to extract deeper insights into **when the model learns**, **where it struggles**, and **how much data is truly necessary**.
+
+The results highlight the synergy between **probabilistic modeling and strategic data acquisition**.  
+By combining GPR with a feedback-driven sampling policy, we developed a learning process that is not only accurate but also **adaptive, interpretable, and efficient** — essential qualities for real-world deployment where resources are limited and time is critical.
+
 
 ---
 
 ## Final Reflections on Part B
 
-The second half of the project demonstrated the practical benefits of **smart sampling** in regression problems.  
-Rather than relying on full datasets, we showed that a well-structured **active learning loop**, guided by model uncertainty, can achieve strong performance with significantly fewer samples.
+The second phase of the project showcased the effectiveness of **smart sampling** strategies for regression tasks under data constraints.  
+Rather than accessing full datasets upfront, we developed an **active learning framework** where the model selectively acquires the most informative data points based on uncertainty.
 
-### Takeaways:
-- Group-wise modeling is a powerful way to decompose complex datasets into manageable units.
-- GPR excels in low-data regimes thanks to its probabilistic foundations and built-in uncertainty estimation.
-- Iterative sampling policies, combined with early stopping, reduce overhead without sacrificing accuracy.
-- Performance varies across hotel groups — reinforcing the value of personalized learning rather than a one-size-fits-all model.
+This approach, powered by **Gaussian Process Regression (GPR)**, allowed us to reduce labeling effort significantly while preserving high predictive accuracy. It also enabled group-specific learning that adapts to the behavior of individual hotel segments.
 
-This approach is well-suited to domains like:
-- Dynamic pricing optimization  
-- Medical diagnosis with limited patient data  
-- Quality assurance in manufacturing pipelines  
-- Personalized recommendation systems
+Key benefits observed:
+- Adaptive sampling led to faster convergence and fewer data requirements
+- GPR provided both predictions and confidence levels, improving model interpretability
+- Localized group modeling outperformed global, one-size-fits-all approaches
+
+This methodology is broadly applicable to domains where labeled data is scarce or expensive — such as dynamic pricing, healthcare diagnostics, and industrial monitoring.
 
 ---
 
 # Project Conclusion
 
-This project demonstrated a full-cycle data science pipeline — from **raw data acquisition and enrichment** (Part A), to **sample-efficient modeling and evaluation** (Part B).
+This project represents a complete data science workflow, integrating both **data acquisition** and **efficient modeling** into a unified pipeline.  
+In Part A, we built the dataset from scratch using robust web scraping and enrichment techniques. In Part B, we shifted the focus to learning **more with less** through probabilistic modeling and iterative sampling.
 
-We successfully:
-- Built a complete dataset using custom web scrapers targeting real booking platforms  
-- Engineered and cleaned features to enhance learnability  
-- Trained and compared multiple baseline models for regression  
-- Implemented Gaussian Process Regression with uncertainty-based sampling  
-- Achieved >0.94 R² while reducing labeled data usage by over 70%
+By combining:
+- Real-world data scraping from live booking platforms  
+- Thoughtful feature engineering and group-wise decomposition  
+- Baseline regressors and advanced models like GPR  
+- An active learning loop guided by model uncertainty
 
-The project highlights the importance of **designing smarter systems, not just gathering more data**.  
-In real-world scenarios where cost and complexity are limiting factors, **adaptive sampling** and **probabilistic modeling** offer a scalable, intelligent alternative.
+—we achieved accurate price predictions with minimal data overhead.
 
----
+Ultimately, the project underscores a key principle:  
+**Strategic modeling choices can often outperform brute-force data collection**, leading to smarter, leaner, and more scalable machine learning systems.
+
