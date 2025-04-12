@@ -23,178 +23,294 @@ Each part builds upon the previous one, forming a complete and scalable workflow
 
 # [Part A – Data Collection, Enrichment and Baseline Modeling](./PartA)
 
-## [1. Web Scraping and Raw Data Construction](./PartA/)
+This part covers the full pipeline from raw data acquisition through web scraping to baseline model construction and evaluation.
 
+At the heart of this section lies the **dataset creation**, which was performed entirely from scratch using real-world hotel booking data. We scraped hotel prices from both **Booking.com** and **Expedia**, processed them into structured CSVs, and gradually transformed the raw data into a clean, analysis-ready format.  
+The final dataset used for modeling is [`merged.csv`](./Data/merged.csv), which combines and harmonizes multiple snapshots from both sources.
 
-The project begins with a full-scale **web scraping operation**, aimed at collecting hotel pricing data from multiple booking sources. The scraping process targeted a variety of hotel chains across different geographic regions and dates, retrieving structured HTML tables and dynamic JavaScript-rendered prices using Selenium and BeautifulSoup.
+Additional data sources involved in earlier stages include:
+- Booking.com snapshots: [`booking_com_20250310.csv`](./Data/booking_com_20250310.csv), [`booking_com_20250312.csv`](./Data/booking_com_20250312.csv), [`booking_com_20250317.csv`](./Data/booking_com_20250317.csv)
+- Expedia snapshots: [`expedia_results - 14.03.2025.csv`](./Data/expedia_results%20-%2014.03.2025.csv), [`expedia_results - 16.03.2025.csv`](./Data/expedia_results%20-%2016.03.2025.csv), [`expedia_results - 18.03.2025.csv`](./Data/expedia_results%20-%2018.03.2025.csv)
+- Intermediate files: [`merged_booking.csv`](./Data/merged_booking.csv), [`matched_expedia.csv`](./Data/matched_expedia.csv), [`combined_expedia_results.csv`](./Data/combined_expedia_results.csv), [`merged_booking_final.csv`](./Data/merged_booking_final.csv)
+- Evaluation analysis: [`price_differences.csv`](./Data/price_differences.csv)
 
-Challenges included:
-- Handling dynamic page content and asynchronous loading
-- Dealing with inconsistent HTML structures and missing values
-- Respecting rate limits and website stability
-
-The scraped data was saved in structured CSV files, with snapshots capturing key attributes such as:
-- Hotel name, location, chain, star rating
-- Room type and occupancy
-- Date of search (snapshot), target stay date
-- Raw price and discount codes
-
-This dataset served as the foundation for all downstream processing and modeling.
+Each of these played a specific role in the data pipeline — from raw scraping to data merging, cleaning, matching and ultimately, modeling.
 
 ---
 
-## [2. Preprocessing and Data Cleaning](./PartA/)
+## [1. Web Scraping and Raw Data Collection](./PartA/PartA1)
 
-Following the scraping phase, the data was passed through a **rigorous preprocessing pipeline**. The goal was to unify formats, handle outliers, and prepare the data for modeling.
+The project began with a comprehensive data acquisition phase, in which we developed dedicated web scrapers to collect real-time hotel pricing data from major travel platforms, specifically **Booking.com** and **Expedia**.  
+This stage required handling complex page dynamics, including asynchronous content loading, JavaScript-rendered elements, scrolling mechanisms, and modal interference. Using **Playwright**, we simulated browser behavior to capture dynamic content, while **BeautifulSoup** was employed for static HTML parsing.  
+Scraping sessions were executed across multiple hotels, locations, and dates, resulting in structured CSV snapshots that reflect the booking state at the time of access. The data includes hotel metadata, room-level details, occupancy, price, and temporal context such as snapshot and check-in dates.
 
-Steps included:
-- Filtering out corrupted rows and null values
+This collected dataset formed the raw input for all downstream cleaning, transformation, and modeling phases.  
+To handle the complexity of dynamic websites, we used a hybrid scraping strategy. **Playwright** was used to simulate full browser behavior and interact with JavaScript-rendered content (like infinite scroll and modals), while **BeautifulSoup** handled the parsing of static HTML structures.
+
+The scraping process was split between two dedicated scripts:
+- [Booking.com Scraper](./PartA/PartA1/Booking_Scraper.py) – focused on capturing structured price data from Booking.com.
+- [Expedia Scraper](./PartA/PartA1/Expedia_Scraper.ipynb) – extracted comparable pricing from Expedia’s platform.
+
+During development, we encountered multiple scraping challenges such as asynchronous loading, dynamic pagination, and inconsistent markup. These were addressed through wait-time calibration, conditional parsing, and result deduplication.
+
+The final output included critical booking information such as:
+hotel name, location, star rating, room type, check-in/check-out dates, snapshot timestamp, occupancy, price, and discount-related metadata.
+
+---
+
+## [2. Preprocessing and Cleaning](./PartA/PartA2.ipynb)
+
+Before modeling could begin, the raw scraped data had to be thoroughly cleaned and unified.  
+This step focused on transforming semi-structured CSV snapshots into a reliable, analysis-ready format, ensuring data consistency and reducing noise.
+
+Preprocessing actions:
+- Removing rows with missing or malformed values
 - Unifying date formats (`Snapshot Date`, `Check-in Date`)
-- Parsing room occupancy and hotel attributes
-- Casting price columns to float and handling currency symbols
-- Generating unique identifiers for snapshot entries
+- Casting prices to float and standardizing currencies
+- Parsing encoded fields like room type and discount code
+- Ensuring uniqueness per hotel-date entry
 
-The output of this phase was a clean, analysis-ready DataFrame.
-
----
-
-## [3. Feature Engineering](./PartA/)
-
-We then performed extensive **feature engineering** to enrich the dataset. This step focused on generating new variables and structures that improve model learnability.
-
-Key transformations:
-- Extracted temporal features (weekday, weekend, seasonality)
-- Created binary flags for discount codes, holiday periods, and last-minute bookings
-- Grouped data by `Hotel Name`, `Snapshot Date`, and `Discount Code` to track availability and price dynamics
-- Normalized numeric features (price, occupancy) using standard scaling
-
-The enriched dataset allowed us to explore temporal trends and booking behaviors more effectively.
+Final output: Clean DataFrame containing only valid hotel offers.
 
 ---
 
-## [4. Baseline Modeling](./PartA/)
+## [3. Feature Engineering](./PartA/PartA3.ipynb)
 
-To evaluate the predictive potential of the data, we built and compared several **baseline regression models**:
+With a clean dataset in place, the next step was to enrich it with meaningful features.  
+The goal here was to expose temporal, behavioral, and contextual signals that could improve model learning and prediction accuracy.
 
-- **Linear Regression**: Used as a simple benchmark for model interpretability  
-- **Random Forest Regressor**: To capture non-linear relationships  
-- **K-Nearest Neighbors (KNN)**: As a distance-based approach for price similarity
+Highlights:
+- Extracted day-of-week, holiday, and seasonality indicators
+- Generated binary flags for late bookings, discount usage, and holidays
+- Calculated stay length and lead time
+- Created composite group identifiers for `(Hotel, Date, Discount Code)`
+- Normalized numerical features using standard scaling
 
-Each model was trained and evaluated using **R² score** and **mean absolute error (MAE)** over a hold-out test set. This provided a baseline reference for the more advanced sampling methods introduced later in Part B.
-
-Cross-validation and stratified sampling ensured robustness across different hotel types and dates.
+This process significantly enhanced the model-readiness of the dataset.
 
 ---
 
-## Summary and Observations
+## [4. Baseline Modeling](./PartA/PartA4.ipynb)
 
-Part A laid the groundwork for the entire project by building the dataset from the ground up.
+To establish a benchmark for price prediction, we trained several baseline regression models on the enriched dataset.  
+These models served as a reference point for later comparisons with smarter, sampling-based methods.
 
-Through careful scraping, cleaning, and engineering, we created a high-dimensional dataset rich in hotel, room, and pricing context. The baseline models showed that:
+Models compared:
+- **Linear Regression** – Simple and interpretable
+- **Random Forest** – Non-linear with ensemble power
+- **K-Nearest Neighbors** – Distance-based local learning
 
-- Linear models struggle to capture nuanced patterns across hotels  
-- Tree-based models (like Random Forest) perform better, but are limited by overfitting  
-- Data sparsity and noise remain critical challenges for price prediction
+Each model was evaluated using:
+- R² score  
+- MAE (Mean Absolute Error)  
+- Train/Test split with cross-validation by hotel group
 
-These insights directly informed the design choices for Part B, where the focus shifts from raw prediction to **sampling efficiency and model generalization**.
+Visualizations included:
+- Predictions vs actual prices  
+- Error distribution plots  
+- Hotel-level breakdowns
+
+---
+
+## [5. Summary & Insights](./PartA/PartA5.ipynb)
+
+This final notebook in Part A consolidates the results from the baseline models and extracts actionable insights.  
+It also reflects on the limitations of traditional modeling in the context of sparse and variable hotel pricing data.
+
+Conclusions from Part A:
+- Tree-based models outperform linear baselines but still suffer from overfitting in sparse data regions  
+- KNN is unstable in high-dimensional contexts  
+- Room price behavior varies strongly by date, hotel, and booking strategy
+
+These findings motivated the move to **Part B**, where the goal is to sample and predict more **efficiently** using **Gaussian Process Regression** and active learning.
 
 ---
 
 # [Part B – Smart Sampling and Gaussian Process Regression](./PartB)
 
-## [1. Motivation and Problem Framing](./PartB/PartB1.ipynb)
+This part focuses on the efficient use of data through **active learning**, **group-wise modeling**, and **sampling-aware regression** techniques.
 
-After establishing a baseline in Part A, the focus in Part B shifts from collecting more data to **using data more efficiently**.  
-The goal is to train accurate predictive models while minimizing the number of data points used – a real-world scenario where data is expensive or limited.
+At this stage, we started from the pre-cleaned and enriched dataset produced in Part A.  
+The raw source file, [`hotels_data.csv`](./Data/hotels_data.csv), was used as the input for this phase and underwent additional transformation in [PartB1.ipynb](./PartB/PartB1.ipynb) to generate [`Hotels_data_Changed.csv`](./Data/Hotels_data_Changed.csv) — which served as the **primary dataset** for all modeling tasks in Part B.
 
-We explore **active learning** and **sampling-efficient regression** techniques using:
-- Iterative sampling strategies
-- Gaussian Process Regression (GPR)
-- Early stopping based on model confidence and R² improvement
+The other files in the `/Data` folder include:
+- [`base_model_results.csv`](./Data/base_model_results.csv) and [`gpr_model_results.csv`](./Data/gpr_model_results.csv) – performance logs from different modeling strategies  
+- [`hotels_clustering_data.csv`](./Data/hotels_clustering_data.csv) and [`PySpark_hotels_clustering_data.csv`](./Data/PySpark_hotels_clustering_data.csv) – used in exploratory analysis and future clustering experiments  
+- [`Hotels_Best_Discount.csv`](./Data/Hotels_Best_Discount.csv) – summary of top discount configurations per group  
+- [`Hotel Clusters Visualization (PySpark).png`](./Data/Hotel%20Clusters%20Visualization%20(PySpark).png) – visual output of clustering analysis (auxiliary)
 
-This part of the project evaluates not only model accuracy, but also **data acquisition cost vs. predictive gain**.
+From this point forward, the dataset is treated as stable and is grouped by hotel and date to enable localized predictive modeling.
 
 ---
 
-## [2. Data Setup and Grouping Logic](./PartB/partB2)
+## [1. Motivation and Problem Framing](./PartB/PartB1.ipynb)
 
-We start from a cleaned dataset (output of Part A or provided) and group data by a unique hotel-date-discount combination.
+Having built a reliable dataset in Part A, the second phase of the project shifts focus from *collecting more data* to *using data more intelligently*.  
+Real-world applications often face constraints on labeling or acquiring samples — particularly in pricing, healthcare, and logistics. Our goal is to train models that can perform well **with fewer, but more informative, samples**.
 
-Each group represents a mini-problem of predicting the price curve over a 30-day horizon before check-in.  
-This allows localized model fitting while maintaining independence between groups.
+This part of the project introduces:
+- **Sampling-aware modeling strategies**
+- **Group-wise problem decomposition**
+- **Uncertainty-based active learning**
 
-Grouping Keys:
+We start by taking the cleaned dataset ([`Hotels_data_Changed.csv`](./Data/Hotels_data_Changed.csv)) and grouping it based on:
 - `Hotel Name`
 - `Snapshot Date`
 - `Discount Code`
 
-This hierarchical structure enables parallel evaluation across thousands of scenarios.
+Each group becomes a mini time-series regression task — predicting hotel prices for a 30-day horizon leading up to the check-in date.  
+This structure allows the modeling of booking behavior in a localized and interpretable way, setting the stage for iterative sampling strategies in subsequent steps.
 
 ---
 
-## [3. Sampling Loop and Active Learning Strategy](./PartB/PartB3.ipynb)
+## [2. Data Grouping & Model Comparison](./PartB/PartB2)
 
-The heart of Part B is an **iterative sampling loop**:
+This section focuses on evaluating various regression models across **grouped sub-problems**.  
+Each group — defined by a unique combination of `Hotel Name`, `Snapshot Date`, and `Discount Code` — represents a distinct forecasting task, where the model must predict room prices over the 30 days leading to check-in.
 
-1. Begin with a small number of initial samples per group (e.g., 2–3 days)
-2. Fit a **Gaussian Process Regressor** to the available points
-3. Predict on remaining days and compute:
-   - R² score on predicted vs. true values
-   - Model uncertainty (standard deviation of GP posterior)
-4. Sample the point with highest uncertainty
-5. Repeat until early stopping is triggered by:
-   - R² stagnation across iterations
-   - Uncertainty dropping below threshold
-   - Max iterations reached (e.g., 10)
+This granular decomposition enables:
+- Independent training and evaluation per group
+- Better interpretability of model behavior across different hotel profiles
+- Fair comparison of model generalization across booking contexts
 
-This loop mimics a real-time sampling policy: the model decides **which day to ask for next**.
+The following models were trained and evaluated:
+- [K-Nearest Neighbors (KNN)](./PartB/PartB2/KNN.ipynb)
+- [Random Forest (RF)](./PartB/PartB2/RF.ipynb)
+- [Decision Trees (DT)](./PartB/PartB2/DT.ipynb)
+- [XGBoost](./PartB/PartB2/XG.ipynb)
+- [Naive Bayes (NB)](./PartB/PartB2/NB.ipynb)
 
----
+Evaluation metrics were consolidated in [B2Compare.ipynb](./PartB/PartB2/B2Compare.ipynb), including:
+- R² scores per group
+- Mean Absolute Error (MAE) comparison
+- Histograms and boxplots of model performance
 
-## [4. Gaussian Process Regression Details](./PartB/PartB4.ipynb)
+The analysis confirmed that:
+- Tree-based models (Random Forest, XGBoost) achieved the highest overall accuracy
+- Simpler models (KNN, NB) struggled with sparse or irregular groups
+- Grouping data by hotel and date improves not only accuracy, but also diagnostic clarity
 
-We used `sklearn.gaussian_process.GaussianProcessRegressor` with a composite kernel to capture both linear and smooth non-linear trends.
-
-GPR was chosen because:
-- It provides a **mean prediction** and **uncertainty estimate**
-- It performs well with small datasets
-- It supports analytical update as new samples are added
-
-The models were fitted separately for each group to avoid cross-interference.
-
-Baseline models like **Linear Regression** were also tested within the same loop for comparison.
+This comparison phase served as a strong diagnostic benchmark, providing insight into model limitations and preparing the groundwork for **iterative, uncertainty-based sampling** in the next stage.
 
 ---
 
-## [5. Results and Evaluation](./PartB/PartB5.ipynb)
+---
 
-Key metrics recorded during the sampling process:
-- Final **R² score** on the full curve
-- **Number of samples required** until early stopping
-- Group-wise performance statistics (mean, std)
-- Comparison to full-data training
+## [3. Iterative Sampling Strategy](./PartB/PartB3.ipynb)
 
-Findings:
-- GPR reached high R² (~0.95) with only 5–7 samples on average
-- Linear regression needed more samples to stabilize
-- Early stopping reduced computation and labeled data usage significantly
+Building on the grouped structure established earlier, this section introduces a **progressive sampling framework** that simulates real-world data acquisition under constraints.
 
-Visualization included:
-- Price prediction curves over 30 days
-- R² vs. iterations graph
-- Uncertainty decay per group
+Instead of accessing all 30 days of pricing data upfront, the model begins with only a few observed points and must **selectively query additional days** based on model-driven criteria.  
+This process mimics scenarios where labeling or obtaining samples is expensive — requiring the model to be smart about which data it asks for.
+
+### Sampling Loop Workflow:
+1. **Initialization**: Begin with 2–3 randomly chosen data points per group.
+2. **Model Training**: Fit a **Gaussian Process Regressor (GPR)** using the current subset.
+3. **Prediction & Evaluation**:
+   - Predict the full 30-day curve.
+   - Measure R² and compute model **uncertainty** (posterior standard deviation).
+4. **Acquisition Step**:
+   - Select the next day with the highest uncertainty.
+   - Add this point to the training set.
+5. **Stopping Criteria**:
+   - R² stagnation across recent iterations.
+   - Uncertainty drops below threshold.
+   - Max iteration limit reached (typically 10).
+
+This method leverages **Bayesian reasoning** to guide the sampling process, targeting the most informative data first — a key principle in **active learning**.
+
+Performance was tracked over iterations, capturing:
+- R² progression
+- Uncertainty decay
+- Number of samples used per group
+
+The strategy proved effective in reducing data needs while maintaining strong predictive performance — setting the stage for the formal use of **Gaussian Process Regression** in the next section.
 
 ---
 
-## Conclusions
+## [4. Gaussian Process Regression Implementation](./PartB/PartB4.ipynb)
 
-Part B demonstrates how smart sampling can drastically reduce the need for labeled data without compromising prediction quality.
+This section provides an in-depth explanation of why **Gaussian Process Regression (GPR)** was selected as the main regression technique in our sampling framework, and how it was configured and evaluated.
 
-Key takeaways:
-- GPR is a strong candidate for active learning in regression
-- Sampling by model uncertainty is effective and interpretable
-- Structuring data by groups enables scalable parallel modeling
+GPR is particularly effective in small-data regimes due to its probabilistic foundation. It offers both a **mean prediction** and a **quantified uncertainty estimate**, which are critical for guiding active learning. These two outputs allow the model not only to predict prices but also to assess where it's uncertain — a valuable capability when data acquisition is limited or costly.
 
-This approach is applicable to many domains where full data is unavailable or costly – such as pricing, medical diagnostics, and supply chain forecasting.
+We applied GPR to each group independently, treating each hotel-date-discount group as a localized regression task. The model's ability to update incrementally made it well-suited for the progressive sampling loop described earlier.
+
+### Model Configuration:
+- Implemented using `sklearn.gaussian_process.GaussianProcessRegressor`
+- Used a composite kernel:
+  - **Constant Kernel** – controls signal strength
+  - **RBF Kernel** – captures smooth trends in pricing
+  - **White Noise Kernel** – accounts for data variability
+- Trained separately on each group (`Hotel Name`, `Snapshot Date`, `Discount Code`)
+- Supports incremental updates as new samples are added
+
+Beyond GPR, we included additional benchmarks to validate the sampling framework's robustness. In particular, we compared GPR to **Linear Regression** as a simple baseline, and explored the differences between **uncertainty-driven sampling** and sampling based on **R² improvement**.
+
+These comparisons highlighted GPR’s superiority in balancing exploration and exploitation. With fewer samples, the GPR models achieved high accuracy and demonstrated more stable convergence than their deterministic counterparts. This reinforced the effectiveness of combining probabilistic modeling with smart sampling in data-scarce environments.
 
 ---
+
+## [5. Results, Evaluation, and Insights](./PartB/PartB5.ipynb)
+
+This final section summarizes the effectiveness of the smart sampling strategy, with a particular focus on the **efficiency, convergence behavior, and generalizability** of the Gaussian Process Regression (GPR) model under real-world constraints.
+
+Our evaluation prioritized not just raw accuracy, but the trade-off between **predictive power and data usage** — a core concern in domains where labels are expensive or slow to acquire. The GPR model, with its uncertainty estimates and smooth interpolation capabilities, proved especially well-suited for this context.
+
+### Key Outcomes and Insights:
+
+The smart sampling loop demonstrated that:
+- **High accuracy can be achieved with limited data**: GPR consistently surpassed an R² of 0.94 on average, often with only **6–8 samples per group**.
+- **Sampling selectivity outperforms brute force**: Instead of feeding the model with all 30 days of pricing data, selective querying (guided by uncertainty) allowed the model to learn faster and more reliably.
+- **Cost-effective learning is viable**: Early stopping, based on uncertainty and R² stagnation, helped reduce the labeling burden by up to **75%**, without compromising prediction quality.
+
+Compared to baseline models like Linear Regression — which often required the full dataset to stabilize — GPR was able to generalize well with fewer examples, making it a powerful solution in low-resource settings.
+
+### Tools and Evaluation Techniques:
+
+Throughout this section, we employed:
+- **Iterative metrics tracking** (R² vs. iteration) to monitor learning efficiency
+- **Uncertainty heatmaps** to assess model confidence across the prediction window
+- **Sampling frequency histograms** to measure how many queries were needed per group
+- **Curve overlays** (prediction vs. ground truth) to visually validate model behavior
+
+These tools provided both **quantitative backing** and **visual diagnostics** for model decisions — allowing us to extract deeper insights into **when the model learns**, **where it struggles**, and **how much data is truly necessary**.
+
+The results highlight the synergy between **probabilistic modeling and strategic data acquisition**.  
+By combining GPR with a feedback-driven sampling policy, we developed a learning process that is not only accurate but also **adaptive, interpretable, and efficient** — essential qualities for real-world deployment where resources are limited and time is critical.
+
+
+---
+
+## Final Reflections on Part B
+
+The second phase of the project showcased the effectiveness of **smart sampling** strategies for regression tasks under data constraints.  
+Rather than accessing full datasets upfront, we developed an **active learning framework** where the model selectively acquires the most informative data points based on uncertainty.
+
+This approach, powered by **Gaussian Process Regression (GPR)**, allowed us to reduce labeling effort significantly while preserving high predictive accuracy. It also enabled group-specific learning that adapts to the behavior of individual hotel segments.
+
+Key benefits observed:
+- Adaptive sampling led to faster convergence and fewer data requirements
+- GPR provided both predictions and confidence levels, improving model interpretability
+- Localized group modeling outperformed global, one-size-fits-all approaches
+
+This methodology is broadly applicable to domains where labeled data is scarce or expensive — such as dynamic pricing, healthcare diagnostics, and industrial monitoring.
+
+---
+
+# Project Conclusion
+
+This project represents a complete data science workflow, integrating both **data acquisition** and **efficient modeling** into a unified pipeline.  
+In Part A, we built the dataset from scratch using robust web scraping and enrichment techniques. In Part B, we shifted the focus to learning **more with less** through probabilistic modeling and iterative sampling.
+
+By combining:
+- Real-world data scraping from live booking platforms  
+- Thoughtful feature engineering and group-wise decomposition  
+- Baseline regressors and advanced models like GPR  
+- An active learning loop guided by model uncertainty
+
+—we achieved accurate price predictions with minimal data overhead.
+
+Ultimately, the project underscores a key principle:  
+**Strategic modeling choices can often outperform brute-force data collection**, leading to smarter, leaner, and more scalable machine learning systems.
+
