@@ -6,7 +6,7 @@ This project explores the challenge of predicting hotel room prices using real-w
 It is divided into two major parts, each tackling a different stage in the data pipeline:
 
 - **Part A** involves building the dataset from scratch through web scraping, followed by data cleaning, enrichment, and the development of baseline models.
-- **Part B** assumes a prepared dataset and focuses on **sampling-efficient modeling** using techniques like **Gaussian Process Regression (GPR)**, aiming to minimize the number of samples needed while preserving high prediction accuracy.
+- **Part B** assumes a prepared dataset and focuses on **sampling-efficient modeling** using techniques like **Gaussian Process Regression (GPR)**, aiming to minimize the number of samples needed while preserving high prediction accuracy. 
 
 The core goal of this project is to simulate an end-to-end, production-level data science process — from raw data collection to intelligent model design and evaluation.
 
